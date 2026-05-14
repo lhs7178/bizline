@@ -158,7 +158,22 @@ python download_dart_corp_codes.py --include-unlisted -o dart_all_corp_codes.csv
 
 ## SSL 인증서 오류가 날 때
 
-아래 오류가 나오면 스크립트 문제가 아니라, 현재 PC의 Python이 OpenDART HTTPS 인증서를 검증할 때 필요한 로컬 인증서 정보를 찾지 못하는 상황입니다.
+아래처럼 `download_corp_code_zip`의 `urlopen(request, timeout=60)` 라인이 보이는 긴 Traceback이 계속 나오면, 지금 PC에서 실행 중인 `download_dart_corp_codes.py`가 최신 파일이 아닐 가능성이 큽니다. 최신 파일은 SSL 오류가 나도 긴 Traceback 대신 `error: OpenDART HTTPS 인증서 검증에 실패했습니다...`처럼 짧게 안내합니다.
+
+먼저 VS Code에서 `download_dart_corp_codes.py`를 열고 `--insecure-skip-tls-verify`라는 문구가 있는지 검색하세요. 없으면 GitHub/PR에서 최신 `download_dart_corp_codes.py`를 다시 다운로드해서 기존 파일을 덮어쓴 뒤 실행해야 합니다.
+
+```text
+File "...download_dart_corp_codes.py", line 66, in download_corp_code_zip
+    with urllib.request.urlopen(request, timeout=60) as response:
+```
+
+최신 파일로 교체한 뒤에는 아래 명령으로 다시 실행합니다.
+
+```powershell
+python download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv
+```
+
+아래 오류 자체는 스크립트 문제가 아니라, 현재 PC의 Python이 OpenDART HTTPS 인증서를 검증할 때 필요한 로컬 인증서 정보를 찾지 못하는 상황입니다.
 
 ```text
 ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed
@@ -180,7 +195,7 @@ ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verif
    python download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv
    ```
 
-5. 그래도 같은 SSL 오류가 계속 나고, 회사/학교 보안 프로그램이나 프록시 때문에 인증서 검증이 막히는 환경이라면 임시 우회 옵션으로 테스트할 수 있습니다.
+5. 그래도 같은 SSL 오류가 계속 나고, 회사/학교 보안 프로그램이나 프록시 때문에 인증서 검증이 막히는 환경이라면 임시 우회 옵션으로 테스트할 수 있습니다. 이 명령에서 `--insecure-skip-tls-verify` 옵션을 인식하지 못한다면 최신 파일이 아니므로 먼저 `download_dart_corp_codes.py`를 다시 다운로드하세요.
 
    ```powershell
    python download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv --insecure-skip-tls-verify
