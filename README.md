@@ -155,6 +155,39 @@ python download_dart_corp_codes.py --include-unlisted -o dart_all_corp_codes.csv
 ```
 
 
+
+## SSL 인증서 오류가 날 때
+
+아래 오류가 나오면 스크립트 문제가 아니라, 현재 PC의 Python이 OpenDART HTTPS 인증서를 검증할 때 필요한 로컬 인증서 정보를 찾지 못하는 상황입니다.
+
+```text
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed
+```
+
+먼저 아래 순서로 해결해 보세요.
+
+1. Windows PowerShell에서 Python 버전을 확인합니다.
+
+   ```powershell
+   python --version
+   ```
+
+2. Python을 최신 안정 버전으로 다시 설치하거나, 설치 화면에서 **Add python.exe to PATH**를 체크한 뒤 다시 설치합니다.
+3. VS Code를 완전히 종료했다가 다시 열고, 터미널을 새로 엽니다.
+4. 다시 실행합니다.
+
+   ```powershell
+   python download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv
+   ```
+
+5. 그래도 같은 SSL 오류가 계속 나고, 회사/학교 보안 프로그램이나 프록시 때문에 인증서 검증이 막히는 환경이라면 임시 우회 옵션으로 테스트할 수 있습니다.
+
+   ```powershell
+   python download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv --insecure-skip-tls-verify
+   ```
+
+> `--insecure-skip-tls-verify`는 HTTPS 인증서 검증을 끄는 옵션이므로 안전한 해결책은 아닙니다. 급하게 다운로드가 되는지 확인할 때만 임시로 사용하고, 가능하면 Python 인증서/네트워크 환경을 정상화한 뒤 옵션 없이 실행하세요.
+
 ## PowerShell에서 실행했는데 아무 메시지가 안 보일 때
 
 정상 실행이면 터미널에 `1/4`, `2/4`, `3/4`, `4/4`, `완료` 메시지가 차례로 표시되고 `dart_corp_codes.csv`가 생성됩니다. 아무 메시지도 안 보이면 아래 순서로 확인합니다.

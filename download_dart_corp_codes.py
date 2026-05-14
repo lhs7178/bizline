@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import csv
 import os
+import ssl
 import sys
 import tempfile
 import urllib.error
@@ -52,24 +53,48 @@ def parse_args() -> argparse.Namespace:
             "with stock codes are exported."
         ),
     )
+    parser.add_argument(
+        "--insecure-skip-tls-verify",
+        action="store_true",
+        help=(
+            "Skip HTTPS certificate verification. Use only as a temporary workaround "
+            "when your local Python certificate store is broken."
+        ),
+    )
     return parser.parse_args()
 
 
-def download_corp_code_zip(api_key: str) -> bytes:
+def download_corp_code_zip(
+    api_key: str, insecure_skip_tls_verify: bool = False
+) -> bytes:
     query = urllib.parse.urlencode({"crtfc_key": api_key})
     url = f"{OPENDART_CORP_CODE_URL}?{query}"
 
     request = urllib.request.Request(
         url, headers={"User-Agent": "bizline-opendart-downloader/1.0"}
     )
+    context = None
+    if insecure_skip_tls_verify:
+        context = ssl._create_unverified_context()
+
     try:
-        with urllib.request.urlopen(request, timeout=60) as response:
+        with urllib.request.urlopen(
+            request, timeout=60, context=context
+        ) as response:
             return response.read()
     except urllib.error.HTTPError as exc:
         raise RuntimeError(
             f"OpenDART request failed with HTTP {exc.code}: {exc.reason}"
         ) from exc
     except urllib.error.URLError as exc:
+        if isinstance(exc.reason, ssl.SSLCertVerificationError):
+            raise RuntimeError(
+                "OpenDART HTTPS 인증서 검증에 실패했습니다. "
+                "Windows/Python 인증서 저장소 문제일 수 있습니다. "
+                "먼저 README의 SSL 인증서 오류 해결 방법을 확인하세요. "
+                "급하게 테스트만 해야 한다면 --insecure-skip-tls-verify 옵션을 "
+                "임시로 사용할 수 있습니다."
+            ) from exc
         raise RuntimeError(f"OpenDART request failed: {exc.reason}") from exc
 
 
@@ -122,17 +147,23 @@ def main() -> int:
 
     output_path = Path(args.output)
 
-    print("1/4 OpenDART에서 고유번호 ZIP 파일을 다운로드합니다...", flush=True)
-    zip_bytes = download_corp_code_zip(args.api_key)
+    try:
+        print("1/4 OpenDART에서 고유번호 ZIP 파일을 다운로드합니다...", flush=True)
+        zip_bytes = download_corp_code_zip(
+            args.api_key, insecure_skip_tls_verify=args.insecure_skip_tls_verify
+        )
 
-    print("2/4 ZIP 파일에서 XML을 추출합니다...", flush=True)
-    xml_bytes = extract_xml_from_zip(zip_bytes)
+        print("2/4 ZIP 파일에서 XML을 추출합니다...", flush=True)
+        xml_bytes = extract_xml_from_zip(zip_bytes)
 
-    print("3/4 XML에서 회사 목록을 읽습니다...", flush=True)
-    rows = iter_corp_rows(xml_bytes, include_unlisted=args.include_unlisted)
+        print("3/4 XML에서 회사 목록을 읽습니다...", flush=True)
+        rows = iter_corp_rows(xml_bytes, include_unlisted=args.include_unlisted)
 
-    print(f"4/4 CSV 파일을 저장합니다: {output_path}", flush=True)
-    write_csv(rows, output_path)
+        print(f"4/4 CSV 파일을 저장합니다: {output_path}", flush=True)
+        write_csv(rows, output_path)
+    except RuntimeError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
 
     print(f"완료: {len(rows):,}개 행을 {output_path} 파일로 저장했습니다.")
     return 0
