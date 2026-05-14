@@ -1,0 +1,7 @@
+# Generated OpenDART exports
+dart_corp_codes.csv
+dart_all_corp_codes.csv
+
+# Python cache files
+__pycache__/
+*.py[cod]
