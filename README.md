@@ -78,6 +78,31 @@ git push -u origin HEAD
 | `README.md` | 실행 방법을 설명하는 문서입니다. VS Code에서는 미리보기로 열어 보면서 따라 하면 됩니다. |
 | `.gitignore` | 실행 후 생성되는 CSV와 Python 캐시 파일이 Git에 올라가지 않도록 제외하는 설정 파일입니다. 직접 실행할 필요는 없습니다. |
 
+
+### VS Code에서 가장 빠르게 실행하는 방법
+
+`download_dart_corp_codes.py` 파일을 더블클릭해서 여는 것만으로는 CSV가 다운로드되지 않습니다. VS Code 아래쪽 터미널에 명령어를 입력해서 실행해야 합니다.
+
+1. VS Code에서 이 폴더를 엽니다.
+2. 상단 메뉴에서 **Terminal > New Terminal**을 누릅니다.
+3. 터미널에 아래 명령어 중 하나를 복사해서 붙여넣습니다.
+
+Windows PowerShell이면:
+
+```powershell
+python download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv
+```
+
+macOS 또는 Linux이면:
+
+```bash
+python3 download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv
+```
+
+4. 실행이 끝나면 왼쪽 Explorer에 `dart_corp_codes.csv` 파일이 생깁니다. 그 파일이 다운로드 결과입니다.
+
+만약 `python` 또는 `python3` 명령을 찾을 수 없다는 오류가 나오면 Python을 설치한 뒤 VS Code를 다시 열어 실행합니다.
+
 ## VS Code에서 실행하기
 
 1. VS Code를 열고 **File > Open Folder...** 메뉴에서 이 폴더를 엽니다.
