@@ -120,13 +120,21 @@ def main() -> int:
         print("error: provide --api-key or set OPENDART_API_KEY", file=sys.stderr)
         return 2
 
-    zip_bytes = download_corp_code_zip(args.api_key)
-    xml_bytes = extract_xml_from_zip(zip_bytes)
-    rows = iter_corp_rows(xml_bytes, include_unlisted=args.include_unlisted)
     output_path = Path(args.output)
+
+    print("1/4 OpenDART에서 고유번호 ZIP 파일을 다운로드합니다...", flush=True)
+    zip_bytes = download_corp_code_zip(args.api_key)
+
+    print("2/4 ZIP 파일에서 XML을 추출합니다...", flush=True)
+    xml_bytes = extract_xml_from_zip(zip_bytes)
+
+    print("3/4 XML에서 회사 목록을 읽습니다...", flush=True)
+    rows = iter_corp_rows(xml_bytes, include_unlisted=args.include_unlisted)
+
+    print(f"4/4 CSV 파일을 저장합니다: {output_path}", flush=True)
     write_csv(rows, output_path)
 
-    print(f"Saved {len(rows):,} rows to {output_path}")
+    print(f"완료: {len(rows):,}개 행을 {output_path} 파일로 저장했습니다.")
     return 0
 
 

@@ -154,6 +154,39 @@ Windows에서 `python3` 대신 `python`을 써야 하는 환경이면 아래처�
 python download_dart_corp_codes.py --include-unlisted -o dart_all_corp_codes.csv
 ```
 
+
+## PowerShell에서 실행했는데 아무 메시지가 안 보일 때
+
+정상 실행이면 터미널에 `1/4`, `2/4`, `3/4`, `4/4`, `완료` 메시지가 차례로 표시되고 `dart_corp_codes.csv`가 생성됩니다. 아무 메시지도 안 보이면 아래 순서로 확인합니다.
+
+1. 현재 폴더에 실행 파일이 있는지 확인합니다.
+
+   ```powershell
+   dir download_dart_corp_codes.py
+   ```
+
+2. Python이 실제로 실행되는지 확인합니다.
+
+   ```powershell
+   python --version
+   ```
+
+3. 출력 파일이 이미 생성됐는지 확인합니다.
+
+   ```powershell
+   dir dart_corp_codes.csv
+   ```
+
+4. 메시지를 즉시 보면서 다시 실행합니다.
+
+   ```powershell
+   python -u download_dart_corp_codes.py --api-key "발급받은_인증키" -o dart_corp_codes.csv
+   ```
+
+5. 그래도 아무 반응이 없으면 `download_dart_corp_codes.py` 파일 내용이 비어 있거나 다른 파일일 수 있습니다. VS Code 왼쪽 Explorer에서 파일을 열었을 때 Python 코드가 보이는지 확인한 뒤 다시 저장합니다.
+
+> 주의: OpenDART 인증키는 비밀번호처럼 다뤄야 합니다. 채팅, GitHub, 블로그 등에 노출했다면 OpenDART에서 새 인증키를 발급받아 기존 키 대신 사용하세요.
+
 ## 사용법
 
 환경변수로 인증키를 지정한 뒤 실행합니다.
