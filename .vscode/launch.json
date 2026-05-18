@@ -1,0 +1,52 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "OpenDART/KIND 수집 실행",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "risk_sources.collector",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "OPENDART_API_KEY": "${input:opendartApiKey}"
+      },
+      "args": [
+        "--excel",
+        "${input:excelPath}",
+        "--output-dir",
+        "${input:outputDir}",
+        "--lookback-days",
+        "${input:lookbackDays}"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ],
+  "inputs": [
+    {
+      "id": "excelPath",
+      "type": "promptString",
+      "description": "사업자등록번호/업체명이 들어있는 엑셀 또는 CSV 경로",
+      "default": "${workspaceFolder}/customers.xlsx"
+    },
+    {
+      "id": "outputDir",
+      "type": "promptString",
+      "description": "수집 결과를 저장할 폴더",
+      "default": "${workspaceFolder}/out/risk_sources"
+    },
+    {
+      "id": "lookbackDays",
+      "type": "promptString",
+      "description": "OpenDART 공시 조회 기간(일)",
+      "default": "365"
+    },
+    {
+      "id": "opendartApiKey",
+      "type": "promptString",
+      "description": "OpenDART 인증키",
+      "password": true
+    }
+  ]
+}

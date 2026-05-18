@@ -31,6 +31,31 @@ pip install -e .
 bizline-collect-risk-sources --excel ./customers.xlsx --output-dir ./out/risk_sources
 ```
 
+
+## Visual Studio Code에서 실행하기
+
+1. VS Code에서 이 저장소 폴더(`/workspace/bizline`)를 엽니다.
+2. 왼쪽 **Run and Debug** 패널을 열거나 `Ctrl+Shift+D`를 누릅니다.
+3. 실행 구성에서 **OpenDART/KIND 수집 실행**을 선택합니다.
+4. `F5`를 누르면 아래 값을 차례대로 입력하라는 창이 뜹니다.
+   - 엑셀 또는 CSV 파일 경로: 예) `${workspaceFolder}/customers.xlsx`
+   - 결과 저장 폴더: 예) `${workspaceFolder}/out/risk_sources`
+   - OpenDART 공시 조회 기간: 기본값 `365`
+   - OpenDART 인증키: 발급받은 인증키 입력
+5. 실행이 끝나면 결과 저장 폴더에서 `result.json`, `dart_companies.csv`, `dart_disclosures.csv`, `kind_market_events.csv`를 확인합니다.
+
+VS Code 실행 설정은 `.vscode/launch.json`에 들어있습니다. 인증키는 파일에 저장하지 않고 실행할 때마다 입력하도록 구성했습니다.
+
+### VS Code 터미널에서 직접 실행하기
+
+VS Code 하단 터미널에서도 아래처럼 실행할 수 있습니다.
+
+```bash
+cd /workspace/bizline
+export OPENDART_API_KEY="발급받은_OpenDART_인증키"
+PYTHONPATH=src python3 -m risk_sources.collector --excel ./customers.xlsx --output-dir ./out/risk_sources
+```
+
 ## 출력 파일
 
 `--output-dir` 아래에 다음 파일을 생성합니다.
